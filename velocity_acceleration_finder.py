@@ -1,11 +1,19 @@
 from ultralytics import YOLO
 import os
 import matplotlib.pyplot as plt
+import csv
 
-mouse_model = YOLO("./yolo_models/mouse_detection.pt")
+#mouse_model = YOLO("./yolo_models/mouse_detection.pt")
 
 file_name = 'demon_buy.MOV'
-results = mouse_model(f'./output/frames/{file_name}/*.png')
+#results = mouse_model(f'./output/frames/{file_name}/*.png')
+csv_path = f'./output/cordinates/{file_name}/mouse_cordinates.csv'
+mouse_cordinates = []
+
+with open(csv_path, 'r') as f:
+    reader = csv.reader(f)
+    next(reader)  # Skip the header
+    mouse_cordinates = [(float(x), float(y)) if x and y else None for x, y in reader]
 
 prev_y = None
 
@@ -26,16 +34,21 @@ clip_intervals = []
 x_framepoints = []
 y_datapoints = []
 
-for res in results:
+for cord in mouse_cordinates:
     curr_frame += 1
+
     # Avoid false detections issue by ignoring frames with multiple detections
-    if len(res.boxes) != 1:
+    if cord == None:
         #print("Multiple mice detected in frame")
         continue
     
+    curr_x, curr_y = cord
+
+    """
     x1, y1, x2, y2 = res.boxes[0].xyxy[0]
     curr_x = (x1 + x2) / 2
     curr_y = (y1 + y2) / 2
+    #"""
 
     x_framepoints.append(curr_frame)
     y_datapoints.append(curr_y)
