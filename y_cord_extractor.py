@@ -5,7 +5,7 @@ import os
 mouse_model = YOLO("./yolo_models/mouse_detection.pt")
 
 
-file_name = 'demon_buy.MOV'
+file_name = '12_seconds.MOV'
 output_folder = f'./output/cordinates/{file_name}'
 results = mouse_model(f'./output/frames/{file_name}/*.png')
 
