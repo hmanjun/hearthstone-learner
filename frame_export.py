@@ -28,6 +28,7 @@ def split_video_to_frames(video_path, output_folder):
     cap.release()
     
 
-video_path = './d2.MOV'
-output_folder = './output/d2_frames'
+file_name = 'demon_buy.MOV'
+video_path = f'./data/videos/{file_name}'
+output_folder = f'./output/frames/{file_name}'
 split_video_to_frames(video_path, output_folder)
