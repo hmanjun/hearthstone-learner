@@ -28,7 +28,7 @@ def split_video_to_frames(video_path, output_folder):
     cap.release()
     
 
-file_name = '12_seconds.MOV'
+file_name = 'slow_buy.MOV'
 video_path = f'./data/videos/{file_name}'
 output_folder = f'./output/frames/{file_name}'
 split_video_to_frames(video_path, output_folder)

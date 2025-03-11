@@ -5,7 +5,7 @@ import csv
 
 #mouse_model = YOLO("./yolo_models/mouse_detection.pt")
 
-file_name = '12_seconds.MOV'
+file_name = 'slow_buy.MOV'
 #results = mouse_model(f'./output/frames/{file_name}/*.png')
 csv_path = f'./output/cordinates/{file_name}/mouse_cordinates.csv'
 mouse_cordinates = []
