@@ -33,8 +33,10 @@ dy_datapoints = [0,0]
 
 def is_same_direction(initial_dy, current_dy):
     #print(f'is_same_direction result @frame {curr_frame}, {(initial_dy > 0 and current_dy > 0)} {(initial_dy < 0 and current_dy < 0)} {abs(current_dy - initial_dy) < 15}')
+    """
     if 0 < curr_frame < 25:
         print(f'y: {curr_y} frame: {curr_frame}, initial_dy: {initial_dy}, current_dy: {current_dy}')
+    #"""
     return (initial_dy > 0 and current_dy > 0) or (initial_dy < 0 and current_dy < 0) or (abs(current_dy) < 15)
 
 for cord in mouse_cordinates:
@@ -49,7 +51,7 @@ for cord in mouse_cordinates:
     x_framepoints.append(curr_frame)
     y_datapoints.append(curr_y)
 
-    if prev_y == None:
+    if prev_y == None: # Intialization on first frame
         prev_y = curr_y
         y0 = curr_y
         continue
@@ -68,23 +70,30 @@ for cord in mouse_cordinates:
         print(f'Frame: {curr_frame}, dy: {curr_dy}, y: {curr_y}')
     #"""
 
-    if dy0 == None:
-        print(f'setting dy0 to {curr_dy} @frame {curr_frame}')
+    if dy0 == None: # Intialization on second frame
+        #print(f'setting dy0 to {curr_dy} @frame {curr_frame}')
         dy0 = curr_dy
         f0 = curr_frame
         prev_y = curr_y
         continue
 
+    """
     pivot = is_same_direction(dy0, curr_dy)
     if pivot:
         dy_datapoints.append(1)
     else:
         dy_datapoints.append(-1)
+    #"""
+
+    if curr_frame < 350:
+        print(f'Frame: {curr_frame} ------------------------')
+        print(f'y: {curr_y}, dy: {curr_dy}, y0: {y0}, dy0: {dy0}')
 
     if not is_same_direction(dy0, curr_dy):
-        print(f'Changed directions at frame: {curr_frame}, dy0: {dy0}, curr_dy: {curr_dy}')
+        #print(f'Changed directions at frame: {curr_frame}, dy0: {dy0}, curr_dy: {curr_dy}')
+        print(f'Changed directions ******************************')
         if abs(curr_y - y0) > 200: # Clip (Fine tune)
-            print(f'Clipped******************************')
+            #print(f'Clipped******************************')
             #print(f'Clip ({f0},{curr_frame}), curr_y: {curr_y}, y0: {y0}, dy0: {dy0}, curr_dy: {curr_dy}')
             clip_intervals.append((f0, curr_frame))
         y0 = prev_y
@@ -101,7 +110,7 @@ print(f'Clip intervals: {clip_intervals}, len: {len(clip_intervals)}')
 # Create a basic line plot
 #"""
 #plt.plot(x_framepoints, y_datapoints, marker='o')  # 'o' adds markers at data points
-plt.plot(x_framepoints, dy_datapoints, marker='o')
+plt.plot(x_framepoints, y_datapoints, marker='o')
 plt.title('Mouse Y cord at each frame')
 plt.xlabel('Frame')
 plt.ylabel('Y-axis')
