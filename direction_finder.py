@@ -1,8 +1,9 @@
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-file_name = 'slow_buy.MOV'
+file_name = '12_seconds.MOV'
 csv_path = f'./output/cordinates/{file_name}/mouse_cordinates.csv'
 mouse_cordinates = []
 
@@ -22,6 +23,8 @@ curr_frame = -1
 curr_x = None
 curr_y = None
 
+idle = False
+
 # Significant movement
 
 clip_intervals = []
@@ -32,12 +35,10 @@ y_datapoints = []
 dy_datapoints = [0,0]
 
 def is_same_direction(initial_dy, current_dy):
-    #print(f'is_same_direction result @frame {curr_frame}, {(initial_dy > 0 and current_dy > 0)} {(initial_dy < 0 and current_dy < 0)} {abs(current_dy - initial_dy) < 15}')
-    """
-    if 0 < curr_frame < 25:
-        print(f'y: {curr_y} frame: {curr_frame}, initial_dy: {initial_dy}, current_dy: {current_dy}')
-    #"""
     return (initial_dy > 0 and current_dy > 0) or (initial_dy < 0 and current_dy < 0) or (abs(current_dy) < 15)
+
+def is_idle(y_datapoints, curr_y):
+    return (abs(curr_y - y_datapoints[-30]) < 5) # If mouse hasnt moved in half second (60 frames:second)
 
 for cord in mouse_cordinates:
     curr_frame += 1
@@ -57,53 +58,44 @@ for cord in mouse_cordinates:
         continue
 
     curr_dy = curr_y - prev_y
-    """
-    if curr_dy > 0:
-        dy_datapoints.append(1)
-    else:
-        dy_datapoints.append(-1)
-    #"""
-    #dy_datapoints.append(curr_dy)
-
-    """
-    if curr_frame > 416:
-        print(f'Frame: {curr_frame}, dy: {curr_dy}, y: {curr_y}')
-    #"""
 
     if dy0 == None: # Intialization on second frame
-        #print(f'setting dy0 to {curr_dy} @frame {curr_frame}')
         dy0 = curr_dy
         f0 = curr_frame
         prev_y = curr_y
         continue
-
-    """
-    pivot = is_same_direction(dy0, curr_dy)
-    if pivot:
-        dy_datapoints.append(1)
-    else:
-        dy_datapoints.append(-1)
-    #"""
 
     if curr_frame < 350:
         print(f'Frame: {curr_frame} ------------------------')
         print(f'y: {curr_y}, dy: {curr_dy}, y0: {y0}, dy0: {dy0}')
 
     if not is_same_direction(dy0, curr_dy):
-        #print(f'Changed directions at frame: {curr_frame}, dy0: {dy0}, curr_dy: {curr_dy}')
         print(f'Changed directions ******************************')
         if abs(curr_y - y0) > 200: # Clip (Fine tune)
-            #print(f'Clipped******************************')
-            #print(f'Clip ({f0},{curr_frame}), curr_y: {curr_y}, y0: {y0}, dy0: {dy0}, curr_dy: {curr_dy}')
             clip_intervals.append((f0, curr_frame))
         y0 = prev_y
         dy0 = curr_dy
         f0 = curr_frame
 
-
+    if len(y_datapoints) > 30:
+        if is_idle(y_datapoints, curr_y):
+            idle = True
+        elif idle:
+            print(f'broke idle state, curr_y:{curr_y}, y0: {y0}')
+            if abs(curr_y - y0) > 180: # Clip (Fine tune)
+                print(f'and clipped')
+                clip_intervals.append((f0, curr_frame))
+            y0 = prev_y
+            dy0 = curr_dy
+            f0 = curr_frame
+            idle = False
+        
     prev_y = curr_y
 
 print(f'Clip intervals: {clip_intervals}, len: {len(clip_intervals)}')
+
+os.makedirs(f'./output/clips/{file_name}/intervals', exist_ok=True)
+np.savetxt(f'./output/clips/{file_name}/intervals/clip_intervals.txt', clip_intervals, fmt='%d')
 
 # Visualize mouse movement in video
 

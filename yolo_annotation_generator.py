@@ -1,13 +1,14 @@
 import os
 import cv2
 import numpy as np
+from datetime import datetime
 
 # Paths
 #BASE_IMAGE_PATH = './data/images/base_background.png'
-BASE_IMAGE_PATH = './data/images/random_noise_background.png'
+BASE_IMAGE_PATH = './data/images/358_back.png'
 MOUSE_HOVER_IMAGE_PATH = './data/images/mouse_hover.png'
 MOUSE_CLOSED_IMAGE_PATH = './data/images/mouse_closed.png'
-VERSION = 'v1'
+VERSION = 'v3'
 OUTPUT_DIR = f'./output/annotations/{VERSION}'
 CLASS_ID = 0  # YOLO class ID for the mouse
 
@@ -30,16 +31,18 @@ val_ratio = 0.2
 test_ratio = 0.1
 
 # Calculate the number of images for each set
-total_images = 208
+step = 100
+total_images = ((x_end - x_start) // step + 1) * ((y_end - y_start) // step + 1) * 2
 train_size = int(total_images * train_ratio)
 val_size = int(total_images * val_ratio)
 test_size = total_images - train_size - val_size
 current_image = 0
+file_prefix = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Ensure output directories exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(os.path.join(OUTPUT_DIR, "images"), exist_ok=True)
-os.makedirs(os.path.join(OUTPUT_DIR, "labels"), exist_ok=True)
+#os.makedirs(os.path.join(OUTPUT_DIR, "images"), exist_ok=True)
+#os.makedirs(os.path.join(OUTPUT_DIR, "labels"), exist_ok=True)
 
 # Function to overlay mouse image and save
 def overlay_and_save(mouse_img, x, y, suffix, current_image):
@@ -51,6 +54,7 @@ def overlay_and_save(mouse_img, x, y, suffix, current_image):
     alpha_channel = mouse_img[:, :, 3] / 255.0
     alpha_inv = 1.0 - alpha_channel
 
+    #"""
     output_folder = ''
     if current_image <= train_size:
         output_folder = f'{OUTPUT_DIR}/train'
@@ -62,6 +66,8 @@ def overlay_and_save(mouse_img, x, y, suffix, current_image):
     os.makedirs(output_folder, exist_ok=True)
     os.makedirs(os.path.join(output_folder, "images"), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
+    #"""
+    #output_folder = f'{OUTPUT_DIR}/train'
 
 
     for c in range(3):
@@ -70,23 +76,23 @@ def overlay_and_save(mouse_img, x, y, suffix, current_image):
             combined_img[y:y+mouse_h, x:x+mouse_w, c] * alpha_inv
         )
 
-    img_filename = f"{x}_{y}_{suffix}.png"
-    cv2.imwrite(os.path.join(output_folder, "images", img_filename), combined_img)
+    img_filename = f"{file_prefix}_{x}_{y}_{suffix}.png"
+    cv2.imwrite(f'{output_folder}/images/{img_filename}', combined_img)
 
     x_center = (x + mouse_w / 2) / base_w
     y_center = (y + mouse_h / 2) / base_h
     w_norm = mouse_w / base_w
     h_norm = mouse_h / base_h
 
-    label_filename = f"{x}_{y}_{suffix}.txt"
+    label_filename = f"{file_prefix}_{x}_{y}_{suffix}.txt"
     with open(os.path.join(output_folder, "labels", label_filename), "w") as f:
         f.write(f"{CLASS_ID} {x_center:.6f} {y_center:.6f} {w_norm:.6f} {h_norm:.6f}\n")
 
     print(f"Saved image: {img_filename} and label: {label_filename}")
 
 # Generate images and annotations
-for x in range(x_start, x_end + 1, 100):
-    for y in range(y_start, y_end + 1, 100):
+for x in range(x_start, x_end + 1, step):
+    for y in range(y_start, y_end + 1, step):
         current_image += 1
         overlay_and_save(mouse_hover, x, y, "hover", current_image)
         current_image += 1

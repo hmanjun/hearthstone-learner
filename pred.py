@@ -1,10 +1,10 @@
 from ultralytics import YOLO
 
-model = YOLO("./yolo_models/mouse_detection.pt")
+model = YOLO("./yolo_models/v1.pt")
 
-file_name = 'demon_buy.MOV'
+file_name = '12_seconds.MOV'
 #results = model(f'./output/frames/{file_name}/*.png')
-results = model(f'./output/frames/{file_name}/frame_0026.png')
+results = model(f'./output/frames/{file_name}/frame_0357.png')
 
 #print(f"Len results.boxes: {len(results[0].boxes)}")
 #print(f"Len results: {len(results)}")
