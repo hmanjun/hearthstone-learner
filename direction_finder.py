@@ -71,7 +71,7 @@ for cord in mouse_cordinates:
 
     if not is_same_direction(dy0, curr_dy):
         print(f'Changed directions ******************************')
-        if abs(curr_y - y0) > 200: # Clip (Fine tune)
+        if curr_y - y0 > 200: # Clip (Fine tune) Change to absolute difference to capture sell and play
             clip_intervals.append((f0, curr_frame))
         y0 = prev_y
         dy0 = curr_dy
