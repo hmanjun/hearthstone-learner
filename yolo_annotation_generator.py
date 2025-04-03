@@ -8,7 +8,7 @@ from datetime import datetime
 BASE_IMAGE_PATH = './data/images/358_back.png'
 MOUSE_HOVER_IMAGE_PATH = './data/images/mouse_hover.png'
 MOUSE_CLOSED_IMAGE_PATH = './data/images/mouse_closed.png'
-VERSION = 'v3'
+VERSION = 'v4'
 OUTPUT_DIR = f'./output/annotations/{VERSION}'
 CLASS_ID = 0  # YOLO class ID for the mouse
 
@@ -37,7 +37,6 @@ train_size = int(total_images * train_ratio)
 val_size = int(total_images * val_ratio)
 test_size = total_images - train_size - val_size
 current_image = 0
-file_prefix = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Ensure output directories exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -46,6 +45,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Function to overlay mouse image and save
 def overlay_and_save(mouse_img, x, y, suffix, current_image):
+    file_prefix = datetime.now().strftime("%Y%m%d_%H%M%S")
     combined_img = base_img.copy()
 
     if x + mouse_w > base_w or y + mouse_h > base_h:
