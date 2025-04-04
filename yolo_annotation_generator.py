@@ -8,7 +8,7 @@ from datetime import datetime
 BASE_IMAGE_PATH = './data/images/358_back.png'
 MOUSE_HOVER_IMAGE_PATH = './data/images/mouse_hover.png'
 MOUSE_CLOSED_IMAGE_PATH = './data/images/mouse_closed.png'
-VERSION = 'v4'
+VERSION = 'v1wneg'
 OUTPUT_DIR = f'./output/annotations/{VERSION}'
 CLASS_ID = 0  # YOLO class ID for the mouse
 

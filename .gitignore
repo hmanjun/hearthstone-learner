@@ -3,6 +3,8 @@ data/
 output/*
 !output/cordinates/
 
+drive_folder/annotations/
+
 runs/
 
 .env

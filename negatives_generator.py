@@ -8,7 +8,7 @@ import random
 #BASE_IMAGE_PATH = './data/images/base_background.png'
 BASE_IMAGE_PATH = './data/images/clear_back.png'
 MINIONS_IMAGE_PATH = './data/images/minions'
-VERSION = 'v4'
+VERSION = 'v1wneg'
 OUTPUT_DIR = f'./output/annotations/{VERSION}'
 num_to_generate = 100
 
