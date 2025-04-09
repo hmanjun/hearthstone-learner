@@ -7,8 +7,8 @@ import random
 # Paths
 #BASE_IMAGE_PATH = './data/images/base_background.png'
 BASE_IMAGE_PATH = './data/images/clear_back.png'
-MINIONS_IMAGE_PATH = './data/images/minions'
-VERSION = 'v1wneg'
+MINIONS_IMAGE_PATH = './data/images/resized_minions'
+VERSION = 'v1'
 OUTPUT_DIR = f'./output/annotations/{VERSION}'
 num_to_generate = 100
 
@@ -16,7 +16,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Get all image file names
 minions_files = [f for f in os.listdir(MINIONS_IMAGE_PATH) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-minions_images = [cv2.imread(os.path.join(MINIONS_IMAGE_PATH, img)) for img in minions_files]
+minions_images = [cv2.imread(os.path.join(MINIONS_IMAGE_PATH, img), cv2.IMREAD_UNCHANGED) for img in minions_files]
 
 base_img = cv2.imread(BASE_IMAGE_PATH)
 
@@ -44,9 +44,15 @@ def overlay_and_save(minions_images, base, save_location, img_num):
         add_img = minions_images[random.randint(0, len(minions_images)-1)]
 
         minion_h, minion_w, _ = add_img.shape
+        alpha_channel = add_img[:, :, 3] / 255.0
+        alpha_inv = 1.0 - alpha_channel
 
-        base[y:y+minion_h, x:x+minion_w] = add_img
-        x += 103 + 20
+        for c in range(3):
+            base[y:y+minion_h, x:x+minion_w, c] = (
+                add_img[:, :, c] * alpha_channel +
+                base[y:y+minion_h, x:x+minion_w, c] * alpha_inv
+            )
+        x += 99 + 20
 
 
     #Add tavern minions
@@ -61,8 +67,15 @@ def overlay_and_save(minions_images, base, save_location, img_num):
 
         minion_h, minion_w, _ = add_img.shape
 
-        base[y:y+minion_h, x:x+minion_w] = add_img
-        x += 103 + 20
+        alpha_channel = add_img[:, :, 3] / 255.0
+        alpha_inv = 1.0 - alpha_channel
+
+        for c in range(3):
+            base[y:y+minion_h, x:x+minion_w, c] = (
+                add_img[:, :, c] * alpha_channel +
+                base[y:y+minion_h, x:x+minion_w, c] * alpha_inv
+            )
+        x += 99 + 20
 
 
     img_filename = f"negative_{img_num}_{file_suffix}.png"

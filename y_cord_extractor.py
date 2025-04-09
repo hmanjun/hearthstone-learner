@@ -6,7 +6,7 @@ mouse_model = YOLO("./yolo_models/mouse_detection.pt")
 
 
 file_name = '12_seconds.MOV'
-output_folder = f'./output/cordinates/{file_name}'
+output_folder = f'./output/cordinates/{file_name}_test'
 results = mouse_model(f'./output/frames/{file_name}/*.png')
 
 # Create output folder if it doesn't exist
